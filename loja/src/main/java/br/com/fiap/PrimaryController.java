@@ -1,13 +1,12 @@
 package br.com.fiap;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
 
 import br.com.fiap.model.Usuario;
 import javafx.fxml.FXML;
@@ -27,31 +26,33 @@ public class PrimaryController implements Initializable {
     @FXML CheckBox checkBoxAceita;
     @FXML Button buttonSalvar;
 
-    String server = "185.211.7.205";
+    String server = "sql719.main-hosting.eu";
         String database = "u553405907_fiap";
-        String username = "u553405907_fiap";
-        String pass = "Fiap@2022";
-        String url = "jdbc:mysql://" + server + ":3306/" + database;
+        String username = "rm93342";
+        String pass = "150303";
+        String url = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL";
 
 
     public void salvar(){
        
         var usuario = carregarUsuarioDoFormulario();
         System.out.println(usuario);
+        
+        String sql = String.format("INSERT INTO USUARIO (id_usuario , nome, email, senha, perfil) " + 
+                    "VALUES (usuario_seq.nextval, '%s', '%s', '%s', '%s')",
+                        usuario.getNome(),
+                        usuario.getEmail(),
+                        usuario.getSenha(),
+                        usuario.getPerfil());
+        System.out.println(sql);
 
         try{
 
             Connection con = DriverManager.getConnection(url, username, pass);
             Statement stm = con.createStatement();
-            String sql = String.format("INSET INTO USUARIO (id , nome, email, senha, perfil)" + 
-                        "VALUES (0, '%s', '%s', '%s', '%s')",
-                            usuario.getNome(),
-                            usuario.getEmail(),
-                            usuario.getSenha(),
-                            usuario.getPerfil()
-                        );
-            System.out.println(sql);
+
             stm.execute(sql);
+
             con.close();
         }catch(Exception e){
             System.err.println(e.getMessage());
@@ -76,6 +77,10 @@ public class PrimaryController implements Initializable {
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
         choiceBoxPerfil.getItems().addAll(List.of("USUARIO", "VENDEDOR","GERENTE" ));
+    }
+
+    public void abrirListaDeUsuario() throws IOException{
+        App.setRoot("secondary");
     }
    
 }
